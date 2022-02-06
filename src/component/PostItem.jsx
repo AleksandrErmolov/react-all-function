@@ -1,11 +1,11 @@
 import React from 'react';
 
-function PostItem({id, title, body}) {
+function PostItem({number, title, body}) {
 
     return (
         <div className='post'>
             <div className='post__content'>
-                <strong>{id}. {title}</strong>
+                <strong>{number}. {title}</strong>
                 <div>
                     {body}
                 </div>
