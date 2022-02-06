@@ -2,6 +2,7 @@ import './styles/App.css'
 import PostItem from "./component/PostItem";
 import {useState} from "react";
 import PostList from "./component/PostList";
+import MyButton from "./component/UI/Button/MyButton";
 
 function App() {
 
@@ -14,8 +15,12 @@ function App() {
 
     return (
         <div className="App">
+            <form>
+                <input type='text' placeholder='Название поста'/>
+                <input type='text' placeholder='Описание поста'/>
+                <MyButton disabled> Создать пост </MyButton>
+            </form>
             <PostList posts={posts} title='Список постов 1'/>
-
         </div>
     );
 }
