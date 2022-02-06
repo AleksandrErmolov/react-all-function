@@ -1,21 +1,14 @@
 import './styles/App.css'
+import PostItem from "./component/PostItem";
 
 function App() {
-  return (
-    <div className="App">
-      <div className='post'>
-        <div className='post__content'>
-        <strong>1. Javascript</strong>
-          <div>
-            Javascript - язык программирования
-          </div>
+    return (
+        <div className="App">
+            <PostItem/>
+            <PostItem/>
+            <PostItem/>
         </div>
-        <div className='post__btns'>
-          <button>Удалить</button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default App;
