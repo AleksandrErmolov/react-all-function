@@ -1,12 +1,13 @@
 import React from 'react';
 
-function PostItem(props) {
+function PostItem({id, title, body}) {
+
     return (
         <div className='post'>
             <div className='post__content'>
-                <strong>1. Javascript</strong>
+                <strong>{id}. {title}</strong>
                 <div>
-                    Javascript - язык программирования
+                    {body}
                 </div>
             </div>
             <div className='post__btns'>
