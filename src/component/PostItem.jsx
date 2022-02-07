@@ -1,6 +1,7 @@
 import React from 'react';
+import MyButton from "./UI/Button/MyButton";
 
-function PostItem({number, title, body}) {
+function PostItem({number, title, body, removePost, post}) {
 
     return (
         <div className='post'>
@@ -11,7 +12,7 @@ function PostItem({number, title, body}) {
                 </div>
             </div>
             <div className='post__btns'>
-                <button>Удалить</button>
+                <MyButton onClick={() => removePost(post)}>Удалить</MyButton>
             </div>
         </div>
     );
