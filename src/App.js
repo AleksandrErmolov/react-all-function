@@ -1,10 +1,9 @@
 import './styles/App.css'
-import {useState} from "react";
+import {useState, useMemo} from "react";
 import PostList from "./component/PostList";
-import MyButton from "./component/UI/Button/MyButton";
-import MyInput from "./component/UI/Input/MyInput";
 import PostForm from "./component/PostForm";
 import MySelect from "./component/UI/MySelect/MySelect";
+import MyInput from "./component/UI/Input/MyInput";
 
 function App() {
 
@@ -15,6 +14,24 @@ function App() {
     ])
 
     const [selectedSort, setSelectedSort] = useState('')
+    const [searchQuery, setSearchQuery] = useState('')
+
+
+
+    const sortedPosts = useMemo (() => {
+
+        if(selectedSort){
+            console.log('фуyнкция отработала')
+            return [...posts].sort((a,b) => a[selectedSort].localeCompare(b[selectedSort]))
+        }
+        return posts;
+
+    }, [selectedSort, posts])
+
+
+    const sortedAndSearchedPosts = useMemo(() => {
+return sortedPosts.filter(post => post.title.toLowerCase().includes(searchQuery) )
+    }, [searchQuery, sortedPosts])
 
     const create = (newPost) => {
         setPosts([...posts, newPost])
@@ -26,7 +43,6 @@ function App() {
 
     const sortPosts = (sort) => {
         setSelectedSort(sort)
-        setPosts([...posts].sort((a,b) => a[sort].localeCompare(b[sort])))
     }
 
     return (
@@ -34,16 +50,26 @@ function App() {
             <PostForm create={create}/>
             <hr style={{margin: '15px 0'}}/>
             <div>
+
+                <MyInput
+                    placeholder={'поиск'}
+                    type='text'
+                    value={searchQuery}
+                    onChange={e=> setSearchQuery(e.target.value)}
+                />
+
                 <MySelect defaultValue='Сортировка по'
                           options={[
                               {value: 'title', name: 'По названию'},
                               {value: 'body', name: 'По описанию'},
 
                           ]}
-                          value={selectedSort} onChange={sortPosts}/>
+                          value={selectedSort} onChange={sortPosts}
+                />
+
             </div>
-            {posts.length
-                ? <PostList removePost={removePost} posts={posts} title='Посты про JS'/>
+            {sortedAndSearchedPosts.length
+                ? <PostList removePost={removePost} posts={sortedAndSearchedPosts} title='Посты про JS'/>
                 : <h1 style={{textAlign: 'center'}}> Посты не найдены</h1>
             }
 
