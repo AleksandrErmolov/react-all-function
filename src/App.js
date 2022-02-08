@@ -1,12 +1,13 @@
 import './styles/App.css'
-import {useState, useMemo, useEffect} from "react";
+import {useState, useEffect} from "react";
 import PostList from "./component/PostList";
 import PostForm from "./component/PostForm";
 import PostFilter from "./component/PostFilter";
 import MyModal from "./component/UI/MyModal/MyModal";
 import MyButton from "./component/UI/Button/MyButton";
 import {usePosts} from "./hooks/usePosts";
-import axios from "axios";
+import PostService from "./API/PostService";
+import Loader from "./component/UI/Loader/Loader";
 
 function App() {
 
@@ -15,17 +16,24 @@ function App() {
     const [filter, setFilter] = useState({sort: '', query: ''})
     const [modal, setModal] = useState(false)
     const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+    const [isPostsLoading, setIsPostsLoading] = useState('false')
 
     useEffect(() => {
         fetchPosts()
     }, [])
 
 
-   async function fetchPosts() {
-        const response = await axios.get('https://jsonplaceholder.typicode.com/posts')
-       setPosts(response.data)
+    async function fetchPosts() {
+        setIsPostsLoading(true)
+
+        setTimeout (async () => {
+            const posts = await PostService.getAll();
+            setPosts(posts)
+            setIsPostsLoading(false)
+        }, 5000)
+
     }
-    
+
     const create = (newPost) => {
         setPosts([...posts, newPost])
         setModal(false)
@@ -38,7 +46,7 @@ function App() {
 
     return (
         <div className="App">
-            <MyButton style={{marginTop:30}} onClick={() => setModal(true)}>
+            <MyButton style={{marginTop: 30}} onClick={() => setModal(true)}>
                 Создать пост
             </MyButton>
             <MyModal visible={modal} setVisible={setModal}>
@@ -47,7 +55,11 @@ function App() {
 
             <hr style={{margin: '15px 0'}}/>
             <PostFilter filter={filter} setFilter={setFilter}/>
-            <PostList removePost={removePost} posts={sortedAndSearchedPosts} title='Посты про JS'/>
+            {isPostsLoading
+                ? <div style={{display:'flex', justifyContent:'center', marginTop:50}}><Loader /></div>
+                : <PostList removePost={removePost} posts={sortedAndSearchedPosts} title='Посты про JS'/>
+
+            }
         </div>
     );
 }
