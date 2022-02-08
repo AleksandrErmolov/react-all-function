@@ -5,7 +5,6 @@ export const useSortedPosts = (posts, sort) => {
     const sortedPosts = useMemo(() => {
 
         if (sort) {
-            console.log('фуyнкция отработала')
             return [...posts].sort((a, b) => a[sort].localeCompare(b[sort]))
         }
         return posts;

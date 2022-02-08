@@ -8,31 +8,34 @@ import MyButton from "./component/UI/Button/MyButton";
 import {usePosts} from "./hooks/usePosts";
 import PostService from "./API/PostService";
 import Loader from "./component/UI/Loader/Loader";
+import {useFetching} from "./hooks/useFetching";
+import {getPageCount, getPagesArray} from "./utils/pages";
 
 function App() {
 
     const [posts, setPosts] = useState([])
-
     const [filter, setFilter] = useState({sort: '', query: ''})
     const [modal, setModal] = useState(false)
+    const [totalPages, setTotalPages] = useState(0)
+    const [limit, setLimit] = useState(10)
+    const [page, setPage] = useState(1)
     const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
-    const [isPostsLoading, setIsPostsLoading] = useState('false')
+
+    let pagesArray = getPagesArray(totalPages)
+    console.log(pagesArray)
+
+    const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
+        const response = await PostService.getAll(limit, page);
+        setPosts(response.data)
+        const totalCount = response.headers['x-total-count']
+        setTotalPages(getPageCount(totalCount, limit))
+    })
+
 
     useEffect(() => {
         fetchPosts()
     }, [])
 
-
-    async function fetchPosts() {
-        setIsPostsLoading(true)
-
-        setTimeout (async () => {
-            const posts = await PostService.getAll();
-            setPosts(posts)
-            setIsPostsLoading(false)
-        }, 5000)
-
-    }
 
     const create = (newPost) => {
         setPosts([...posts, newPost])
@@ -41,6 +44,11 @@ function App() {
 
     const removePost = (post) => {
         setPosts(posts.filter(el => el.id !== post.id))
+    }
+
+    const changePage = (page) => {
+        setPage(page)
+        fetchPosts()
     }
 
 
@@ -55,11 +63,26 @@ function App() {
 
             <hr style={{margin: '15px 0'}}/>
             <PostFilter filter={filter} setFilter={setFilter}/>
+            {postError &&
+            <h1>Произошла ошибка {postError}</h1>
+            }
             {isPostsLoading
-                ? <div style={{display:'flex', justifyContent:'center', marginTop:50}}><Loader /></div>
+                ? <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
                 : <PostList removePost={removePost} posts={sortedAndSearchedPosts} title='Посты про JS'/>
 
             }
+            <div className='page__wrapper'>
+                {pagesArray.map(p =>
+                    <span
+                        onClick={() => changePage(p)}
+                        key={p}
+                        className={page === p ? "page page__current" : 'page'}>
+                        {p}
+                    </span>
+                )}
+            </div>
+
+
         </div>
     );
 }
