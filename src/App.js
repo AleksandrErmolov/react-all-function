@@ -5,7 +5,7 @@ import PostForm from "./component/PostForm";
 import PostFilter from "./component/PostFilter";
 import MyModal from "./component/UI/MyModal/MyModal";
 import MyButton from "./component/UI/Button/MyButton";
-import {usePosts} from "./hooks/usePosts";
+import {usePagination, usePosts} from "./hooks/usePosts";
 import PostService from "./API/PostService";
 import Loader from "./component/UI/Loader/Loader";
 import {useFetching} from "./hooks/useFetching";
@@ -21,7 +21,10 @@ function App() {
     const [page, setPage] = useState(1)
     const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
-    let pagesArray = getPagesArray(totalPages)
+    // let pagesArray = getPagesArray(totalPages)
+    // console.log(pagesArray)
+
+    let pagesArray = usePagination(totalPages)
     console.log(pagesArray)
 
     const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
@@ -34,7 +37,7 @@ function App() {
 
     useEffect(() => {
         fetchPosts()
-    }, [])
+    }, [page])
 
 
     const create = (newPost) => {
@@ -48,7 +51,6 @@ function App() {
 
     const changePage = (page) => {
         setPage(page)
-        fetchPosts()
     }
 
 
@@ -72,7 +74,7 @@ function App() {
 
             }
             <div className='page__wrapper'>
-                {pagesArray.map(p =>
+                {pagesArray?.map(p =>
                     <span
                         onClick={() => changePage(p)}
                         key={p}
