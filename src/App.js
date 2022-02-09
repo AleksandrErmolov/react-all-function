@@ -17,14 +17,25 @@ import Posts from "./pages/Posts";
 import Navbar from "./component/UI/NavBar/Navbar";
 import Error from "./pages/Error";
 import AppRouter from "./component/AppRouter";
+import {AuthContext} from "./context";
 
 function App() {
 
+    const [isAuth,setIsAuth] = useState(false)
+
+    useEffect(() => {
+        if(localStorage.getItem('auth')){
+            setIsAuth(true)
+        }
+    }, [])
+
     return (
+        <AuthContext.Provider value={{isAuth, setIsAuth}}>
         <BrowserRouter>
             <Navbar/>
             <AppRouter/>
         </BrowserRouter>
+        </AuthContext.Provider>
     );
 }
 
